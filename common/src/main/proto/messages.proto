@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package com.les.common.model;
+
+message OrderMessage {
+    string id = 1;
+    Type type = 2;
+    int64 timestamp = 3;
+}
+
+enum Type {
+    ORDER = 0;
+    SELL = 1;
+    REFUND = 2;
+}

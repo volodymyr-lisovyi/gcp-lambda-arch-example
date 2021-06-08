@@ -1,5 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
+    }
+}
+
 plugins {
     id 'java'
+    id "com.google.protobuf" version "0.8.16"
 }
 
 group 'com.les.common'
@@ -10,10 +20,17 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation platform('com.google.cloud:libraries-bom:20.4.0')
+    implementation "com.google.protobuf:protobuf-java"
 }
 
-test {
-    useJUnitPlatform()
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+        }
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc', 'build/generated/source/proto/main/java'
+        }
+    }
 }
