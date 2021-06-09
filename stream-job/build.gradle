@@ -2,16 +2,39 @@ plugins {
     id 'java'
 }
 
-group 'com.les'
+group 'com.les.stream'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
+    implementation project(":common")
+
+    implementation platform('com.google.cloud:libraries-bom:20.6.0')
+    implementation 'com.google.api-client:google-api-client'
+    implementation 'com.google.apis:google-api-services-bigquery'
+    implementation 'com.google.http-client:google-http-client'
+    implementation 'com.google.apis:google-api-services-pubsub'
+    implementation 'com.google.apis:google-api-services-pubsub'
+
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-bom
+    implementation platform('org.apache.beam:beam-sdks-java-bom:2.29.0')
+    implementation 'org.apache.beam:beam-sdks-java-core'
+    implementation 'org.apache.beam:beam-sdks-java-io-google-cloud-platform'
+    implementation 'org.apache.beam:beam-runners-google-cloud-dataflow-java'
+    runtimeOnly 'org.apache.beam:beam-runners-direct-java'
+    runtimeOnly 'org.apache.beam:beam-runners-portability-java'
+
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+// Used to execute pipeline
+task execute (type:JavaExec) {
+    main = 'com.les.stream.Application'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties System.getProperties()
+    args System.getProperty("exec.args", "").split()
 }
 
 test {
