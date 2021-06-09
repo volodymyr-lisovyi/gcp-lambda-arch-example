@@ -6,10 +6,6 @@ plugins {
 group 'com.les.publisher'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 application {
     mainClassName = 'com.les.publisher.Application'
 }
@@ -17,8 +13,11 @@ application {
 dependencies {
     implementation project(":common")
 
-    implementation platform('com.google.cloud:libraries-bom:20.4.0')
+    implementation platform('com.google.cloud:libraries-bom:20.6.0')
     implementation 'com.google.cloud:google-cloud-pubsub'
+
+    implementation 'commons-cli:commons-cli:1.4'
+
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
