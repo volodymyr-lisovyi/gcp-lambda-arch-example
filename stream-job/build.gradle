@@ -15,7 +15,7 @@ dependencies {
     implementation 'com.google.apis:google-api-services-pubsub'
     implementation 'com.google.apis:google-api-services-pubsub'
 
-    // https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-bom
+
     implementation platform('org.apache.beam:beam-sdks-java-bom:2.29.0')
     implementation 'org.apache.beam:beam-sdks-java-core'
     implementation 'org.apache.beam:beam-sdks-java-io-google-cloud-platform'

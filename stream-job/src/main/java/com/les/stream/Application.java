@@ -4,6 +4,7 @@ import com.google.api.services.bigquery.model.TableRow;
 import com.les.common.model.Messages;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
+import org.apache.beam.sdk.extensions.protobuf.ProtoCoder;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
@@ -15,6 +16,8 @@ import org.apache.beam.sdk.transforms.windowing.*;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+
+import java.util.Base64;
 
 import static com.les.common.model.Messages.OrderMessage;
 
@@ -73,7 +76,8 @@ public class Application {
                         MapElements.via(new SimpleFunction<OrderMessage, String>() {
                             @Override
                             public String apply(OrderMessage input) {
-                                return input.toByteString().toStringUtf8();
+
+                                return Base64.getEncoder().encodeToString(input.toByteArray());
                             }
                         })
                 )
