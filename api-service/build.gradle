@@ -1,8 +1,11 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '2.5.0'
 }
 
-group 'com.les'
+apply plugin: 'io.spring.dependency-management'
+
+group 'com.les.api'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -10,6 +13,13 @@ repositories {
 }
 
 dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-webflux')
+
+    implementation platform('com.google.cloud:libraries-bom:20.6.0')
+    implementation 'com.google.cloud:google-cloud-bigquery'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('io.projectreactor:reactor-test')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
