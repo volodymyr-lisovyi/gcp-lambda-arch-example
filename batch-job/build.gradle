@@ -35,7 +35,7 @@ dependencies {
 
 // Used to execute pipeline
 task execute (type:JavaExec) {
-    main = 'com.les.batch.Application'
+    getMainClass().set('com.les.batch.Application')
     classpath = sourceSets.main.runtimeClasspath
     systemProperties System.getProperties()
     args System.getProperty("exec.args", "").split()
@@ -43,7 +43,7 @@ task execute (type:JavaExec) {
 
 // Used to execute pipeline
 task testExecute (type:JavaExec) {
-    main = 'com.les.batch.TestApplication'
+    getMainClass().set('com.les.batch.TestApplication')
     classpath = sourceSets.main.runtimeClasspath
     systemProperties System.getProperties()
     args System.getProperty("exec.args", "").split()

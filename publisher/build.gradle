@@ -7,7 +7,7 @@ group 'com.les.publisher'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClassName = 'com.les.publisher.Application'
+    getMainClass().set('com.les.publisher.Application')
 }
 
 dependencies {

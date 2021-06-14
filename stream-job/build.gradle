@@ -31,7 +31,7 @@ dependencies {
 
 // Used to execute pipeline
 task execute (type:JavaExec) {
-    main = 'com.les.stream.Application'
+    getMainClass().set('com.les.stream.Application')
     classpath = sourceSets.main.runtimeClasspath
     systemProperties System.getProperties()
     args System.getProperty("exec.args", "").split()

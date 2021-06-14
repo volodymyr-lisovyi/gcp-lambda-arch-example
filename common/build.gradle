@@ -26,7 +26,11 @@ sourceSets {
             srcDir 'src/main/proto'
         }
         java {
-            srcDirs 'build/generated/source/proto/main/grpc', 'build/generated/source/proto/main/java'
+            srcDirs 'build/generated/source/proto/main/grpc', 'build/classes/java/main'
         }
     }
+}
+
+processResources {
+    setDuplicatesStrategy(DuplicatesStrategy.INCLUDE)
 }
