@@ -1,6 +1,6 @@
 # batch job
 
-Example of Apache Beam SDK pipeline for real time processing
+Example of Apache Beam SDK pipeline for batch processing
 
 ## How to run locally
 ```

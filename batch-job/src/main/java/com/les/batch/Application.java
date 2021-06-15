@@ -114,6 +114,7 @@ public class Application {
                         return input.getKey().toString() + ":" + input.getValue();
                     }
                 }))
+                // todo: write metrics to BigTable/BigQuery/etc..
                 .apply(
                         "Write result",
                         TextIO
