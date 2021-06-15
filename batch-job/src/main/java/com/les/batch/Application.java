@@ -1,5 +1,6 @@
 package com.les.batch;
 
+import com.google.api.services.bigquery.model.TableRow;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.les.common.model.Messages;
 import org.apache.beam.sdk.Pipeline;
@@ -7,6 +8,7 @@ import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.coders.Coder;
 import org.apache.beam.sdk.coders.CoderException;
 import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.Count;
 import org.apache.beam.sdk.transforms.MapElements;
@@ -18,6 +20,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 
@@ -26,6 +32,12 @@ import static com.les.common.model.Messages.OrderMessage;
 public class Application {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
+
+    private static final DateTimeFormatter dateF = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+            .withZone(ZoneOffset.UTC);
+
+    private static final DateTimeFormatter hourF = DateTimeFormatter.ofPattern("HH:00")
+            .withZone(ZoneOffset.UTC);
 
     /**
      * The {@link Options} class provides the custom execution options passed by the executor at the
@@ -39,6 +51,12 @@ public class Application {
 
         void setInputDirectory(ValueProvider<String> value);
 
+        @Description("The table to write to")
+        @Validation.Required
+        ValueProvider<String> getOutputTable();
+
+        void setOutputTable(ValueProvider<String> value);
+
     }
 
     public static void main(String[] args) {
@@ -50,6 +68,10 @@ public class Application {
     }
 
     public static PipelineResult run(Options options) {
+
+        final Instant now = Instant.now();
+        final String date = dateF.format(now);
+        final String hour = hourF.format(now);
 
         var pipeline = Pipeline.create(options);
         pipeline.getCoderRegistry().registerCoderForClass(Messages.Type.class, new Coder<Messages.Type>() {
@@ -108,19 +130,22 @@ public class Application {
                         "Count by type",
                         Count.perElement()
                 )
-                .apply("Map to String", MapElements.via(new SimpleFunction<KV<Messages.Type, Long>, String>() {
+                .apply("Map to TableRow", MapElements.via(new SimpleFunction<KV<Messages.Type, Long>, TableRow>() {
                     @Override
-                    public String apply(KV<Messages.Type, Long> input) {
-                        return input.getKey().toString() + ":" + input.getValue();
+                    public TableRow apply(KV<Messages.Type, Long> input) {
+                        return new TableRow()
+                                .set("date", date)
+                                .set("time", hour)
+                                .set("count", input.getValue())
+                                .set("type", input.getKey());
                     }
                 }))
-                // todo: write metrics to BigTable/BigQuery/etc..
                 .apply(
-                        "Write result",
-                        TextIO
-                                .write()
-                                .withoutSharding()
-                                .to("./orders-count-by-type.txt")
+                        BigQueryIO.writeTableRows()
+                                .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_NEVER)
+                                .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
+                                .withMethod(BigQueryIO.Write.Method.FILE_LOADS)
+                                .to(options.getOutputTable())
                 );
 
         return pipeline.run();
